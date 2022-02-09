@@ -5,7 +5,7 @@ pipeline {
   }
   stages {
   
-    stage("Branch Check"({
+    stage("Branch Check"){
       when {
              expression { return params.branch_name == "main" && params.merged == true }
            }
