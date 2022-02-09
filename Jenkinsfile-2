@@ -32,7 +32,7 @@ pipeline {
     
     stage("GIT clone"){
       steps{
-        git branch: 'main', credentialsId: 'git-key', url: 'ggit@github.com:TarasPetryk/sonar.git'  
+        git branch: 'main', credentialsId: 'git-key', url: 'git@github.com:TarasPetryk/sonar.git'  
         sh 'ls -la'
       }
     }
