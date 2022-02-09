@@ -4,6 +4,16 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
   stages {
+  
+    stage("Branch Check"({
+      when {
+             expression { return params.branch_name == "main" && params.merged == true }
+           }
+      steps {
+             build 'Branch Check'
+              }
+    }
+  
     stage('Scan') {
       steps {
         withSonarQubeEnv(installationName: 'sq1') { 
