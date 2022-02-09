@@ -21,6 +21,7 @@ pipeline {
         }
       }
     }
+    
     stage("Quality Gate") {
       steps {
         timeout(time: 2, unit: 'MINUTES') {
@@ -28,5 +29,14 @@ pipeline {
         }
       }
     }
+    
+    stage("GIT clone"){
+      steps{
+        git branch: 'main', credentialsId: 'git-key', url: 'ggit@github.com:TarasPetryk/sonar.git'  
+        sh 'ls -la'
+      }
+    }
+    
+    
   }
 }
