@@ -34,7 +34,7 @@ pipeline {
     }
     
     stage("GIT clone"){
-     agent { label 'docker-slave' }
+     agent { label 'self' }
       steps{
         git branch: 'main', credentialsId: 'git-key', url: 'git@github.com:TarasPetryk/sonar.git'  
         sh 'ls /home'
@@ -44,8 +44,8 @@ pipeline {
     stage("Build docker image"){
      agent { label 'self' }
       steps{
-       sh 'pwd'
-       sh 'ls /home'
+       // sh 'pwd'
+       sh 'docker build -t taraspetryk/sonar:latest'
       }
     }
     
