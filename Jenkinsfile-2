@@ -45,7 +45,7 @@ pipeline {
      agent { label 'self' }
       steps{
        // sh 'pwd'
-       sh 'docker build -t taraspetryk/sonar:latest'
+       sh 'docker build -t taraspetryk/sonar:latest .'
       }
     }
     
