@@ -63,7 +63,7 @@ pipeline {
     stage('Push Docker Hub'){
      agent { label 'self' }
        steps {
-         sh 'docker push taraspetryk/sonar:latest'
+         sh 'docker push taraspetryk/sonar:1.1'
        }
     }    
   }
