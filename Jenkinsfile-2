@@ -1,11 +1,12 @@
 pipeline {
-  agent any
+  agent none
   options {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
   stages {
   
     stage("Branch Check"){
+     agent { label 'docker-slave' }
       when {
              expression { return params.branch_name == "main" && params.merged == true }
            }
@@ -15,6 +16,7 @@ pipeline {
     }
   
     stage('Scan') {
+     agent { label 'docker-slave' }
       steps {
         withSonarQubeEnv(installationName: 'sq1') { 
           sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
@@ -23,6 +25,7 @@ pipeline {
     }
     
     stage("Quality Gate") {
+     agent { label 'docker-slave' }
       steps {
         timeout(time: 2, unit: 'MINUTES') {
           waitForQualityGate abortPipeline: true
@@ -31,6 +34,7 @@ pipeline {
     }
     
     stage("GIT clone"){
+     agent { label 'docker-slave' }
       steps{
         git branch: 'main', credentialsId: 'git-key', url: 'git@github.com:TarasPetryk/sonar.git'  
         sh 'ls -la'
