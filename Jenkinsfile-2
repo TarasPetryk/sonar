@@ -1,4 +1,8 @@
 pipeline {
+  encironment {
+   DOCKERHUB_CREDENTIALS = credentials('DockerHub')
+  }
+  
   agent none
   options {
     buildDiscarder(logRotator(numToKeepStr: '5'))
@@ -31,8 +35,8 @@ pipeline {
           waitForQualityGate abortPipeline: true
         }
       }
-    }
-    
+    } 
+        
     stage("GIT clone"){
      agent { label 'self' }
       steps{
@@ -49,6 +53,25 @@ pipeline {
       }
     }
     
+    stage('Login Docker Hub'){
+     agent { label 'self' }
+      steps {
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin'
+        }
+    }
     
+    stage('Push Docker Hub'){
+     agent { label 'self' }
+       steps {
+         sh 'docker push taraspetryk/sonar:latest'
+       }
+    }    
   }
+  
+  post {
+   always {
+     sh 'docker logout'
+   }
+  }
+  
 }
