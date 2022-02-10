@@ -1,5 +1,5 @@
 pipeline {
-  encironment {
+  environment {
    DOCKERHUB_CREDENTIALS = credentials('DockerHub')
   }
   
