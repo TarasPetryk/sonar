@@ -37,7 +37,7 @@ pipeline {
      agent { label 'docker-slave' }
       steps{
         git branch: 'main', credentialsId: 'git-key', url: 'git@github.com:TarasPetryk/sonar.git'  
-        sh 'ls -la'
+        sh 'ls /'
       }
     }
     
@@ -45,7 +45,7 @@ pipeline {
      agent { label 'self' }
       steps{
        sh 'pwd'
-       sh 'ls /'
+       sh 'ls /home'
       }
     }
     
