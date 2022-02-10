@@ -41,6 +41,13 @@ pipeline {
       }
     }
     
+    stage("Build docker image"){
+     agent { label 'self' }
+      steps{
+       app = docker.build("hello-world")
+      }
+    }
+    
     
   }
 }
