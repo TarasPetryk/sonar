@@ -1,22 +1,77 @@
 pipeline {
-  agent any
+  environment {
+   DOCKERHUB_CREDENTIALS = credentials('DockerHub')
+  }
+  
+  agent none
   options {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
   stages {
+  
+    stage("Branch Check"){
+     agent { label 'docker-slave' }
+      when {
+             expression { return params.branch_name == "main" && params.merged == true }
+           }
+      steps {
+             build 'Branch Check'
+              }
+    }
+  
     stage('Scan') {
+     agent { label 'docker-slave' }
       steps {
         withSonarQubeEnv(installationName: 'sq1') { 
           sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
         }
       }
     }
+    
     stage("Quality Gate") {
+     agent { label 'docker-slave' }
       steps {
         timeout(time: 2, unit: 'MINUTES') {
           waitForQualityGate abortPipeline: true
         }
       }
+    } 
+        
+    stage("GIT clone"){
+     agent { label 'self' }
+      steps{
+        git branch: 'main', credentialsId: 'git-key', url: 'git@github.com:TarasPetryk/sonar.git'  
+        sh 'ls /home'
+      }
     }
+    
+    stage("Build docker image"){
+     agent { label 'self' }
+      steps{
+       // sh 'pwd'
+       sh 'docker build -t taraspetryk/sonar:1.1 .'
+      }
+    }
+    
+    stage('Login Docker Hub'){
+     agent { label 'self' }
+      steps {
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+        }
+    }
+    
+    stage('Push Docker Hub'){
+     agent { label 'self' }
+       steps {
+         sh 'docker push taraspetryk/sonar:1.1'
+       }
+    }    
   }
+  
+  post {   
+   always {
+     node('self') { sh 'docker logout' }
+   }
+  }
+  
 }
